@@ -10,6 +10,46 @@ const { access } = require('../middlewares/access.middleware');
 const TaskRouter = express.Router();
 TaskRouter.use(express.json());
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      Task:
+ *          type: object
+ *          properties:
+ *              _id:
+ *                  type: string
+ *                  description: The auto-generaed id of the user
+ *              title:
+ *                  type: string
+ *                  description: The task's title
+ *              body:
+ *                  type: string
+ *                  description: The task's body
+ *              status:
+ *                  type: string
+ *                  description: Status is among one of them 'to-do', 'in-progress', 'done'
+ */
+
+/**
+ * @swagger
+ * /task:
+ *  get:
+ *      summary: This will get all the task data from the database
+ *      tags: [Tasks]
+ *      responses:
+ *          200:
+ *              description: The list of all tasks
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type : array
+ *                          item:
+ *                              $ref: "#/components/schemas/Task"
+ *          400:
+ *              description: Something went Wrong!
+ */
+
 // To get all tasks
 TaskRouter.get('/', auth, access('regular user', 'admin'), async (req, res) => {
   const { status } = req.query;
@@ -75,6 +115,31 @@ TaskRouter.get('/', auth, access('regular user', 'admin'), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /task:
+ *  post:
+ *      summary: To post the details of new task into the database
+ *      tags: [Tasks]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/Task"
+ *      responses:
+ *          200:
+ *              description: The list of all the Tasks
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type : array
+ *                          item:
+ *                              $ref: "#/components/schemas/Task"
+ *          500:
+ *              description: Some server error!
+ */
+
 // Add new task
 TaskRouter.post(
   '/',
@@ -100,6 +165,39 @@ TaskRouter.post(
   }
 );
 
+/**
+ * @swagger
+ * /task/{id}:
+ *  patch:
+ *      summary: To update the details of new task into the database
+ *      tags: [Tasks]
+ *      parameters:
+ *          name: id
+ *          schema:
+ *              type: string
+ *          required: true
+ *          description: The task id
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/Task"
+ *      responses:
+ *          200:
+ *              description: The list of updated user
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type : array
+ *                          item:
+ *                              $ref: "#/components/schemas/Task"
+ *          400:
+ *              description: The user is not found!
+ *          500:
+ *              description: Some server error!
+ */
+
 // update task
 TaskRouter.patch('/:taskID', auth, access('admin'), async (req, res) => {
   const { taskID } = req.params;
@@ -117,6 +215,31 @@ TaskRouter.patch('/:taskID', auth, access('admin'), async (req, res) => {
     res.status(400).json({ error });
   }
 });
+
+/**
+ * @swagger
+ * /task/{id}:
+ *  delete:
+ *      summary: To delete the details of task into the database
+ *      tags: [Tasks]
+ *      parameters:
+ *          name: id
+ *          schema:
+ *              type: string
+ *          required: true
+ *          description: The task id
+ *      responses:
+ *          200:
+ *              description: The list of deletd users
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type : array
+ *                          item:
+ *                              $ref: "#/components/schemas/Task"
+ *          500:
+ *              description: Some server error!
+ */
 
 // Delete task
 TaskRouter.delete(
